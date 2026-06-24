@@ -3,7 +3,7 @@ import numpy as np
 
 def extract_features(file_path):
     """
-    Loads an audio file and extracts a mean MFCC vector.
+    Loads an audio file and returns/extracts a mean MFCC vector.
     """
     try:
         # Load the audio file (only first 30 seconds for consistency)

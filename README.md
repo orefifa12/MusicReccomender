@@ -16,8 +16,7 @@ MusicReccomender/
 ├── src/
 │   ├── __init__.py
 │   ├── extractor.py   # MFCC feature extraction
-│   ├── indexer.py     # FAISS vector index + search
-│   └── service.py     # FastAPI backend (planned)
+│   └── indexer.py     # FAISS vector index + search
 ├── tests/             # Reserved for unit tests
 ├── main.py            # Entry point / demo script
 ├── requirements.txt

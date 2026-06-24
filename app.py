@@ -55,6 +55,7 @@ indexer, scaler, kmeans, song_clusters = library
 with st.sidebar:
     st.header("Settings")
     k = st.slider("Number of recommendations", 1, 10, 3)
+    same_vibe_only = st.toggle("Same vibe only", value=False)
     st.caption(f"Library: {len(song_clusters)} songs · {NUM_CLUSTERS} clusters")
 
 # File uploader
@@ -86,11 +87,17 @@ if uploaded_file is not None:
                 pool_songs, pool_scores, song_clusters, query_cluster
             )
 
-            for result in ranked[:k]:
-                cluster_tag = "same vibe" if result["same_cluster"] else "different vibe"
-                st.write(
-                    f"▶️ {result['song']} — **{result['similarity']:.0f}% match** · {cluster_tag}"
-                )
+            if same_vibe_only:
+                ranked = [r for r in ranked if r["same_cluster"]]
+
+            if not ranked:
+                st.warning("No same-vibe matches found. Try turning off the filter.")
+            else:
+                for result in ranked[:k]:
+                    cluster_tag = "same vibe" if result["same_cluster"] else "different vibe"
+                    st.write(
+                        f"▶️ {result['song']} — **{result['similarity']:.0f}% match** · {cluster_tag}"
+                    )
         else:
             st.warning("No songs in the index to search.")
 

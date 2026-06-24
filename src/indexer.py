@@ -2,6 +2,7 @@ import faiss
 import numpy as np
 
 _DISTANCE_SCALE = 100.0
+dimensionSize = 59  # 40 MFCCs + 12 Chroma + 7 Spectral Contrast
 
 
 def distance_to_match_percent(distance: float) -> float:
@@ -10,64 +11,35 @@ def distance_to_match_percent(distance: float) -> float:
 
 
 class MusicIndexer:
-    def __init__(self, dimension=13):
-        """
-        Initializes the MusicIndexer with a FAISS L2 index of specified dimension and an empty metadata list.
-        
-        Args:
-            dimension (int): The dimensionality of the feature vectors to index. Default is 13.
-        """
+    def __init__(self, dimension=dimensionSize):
         self.index = faiss.IndexFlatL2(dimension)
         self.metadata = []
-        
-   
-    def add_song(self, vector, filename):
-        """
-        Adds a song's feature vector to the FAISS index and stores its filename as metadata.
 
-        Args:
-            vector (np.ndarray): The feature vector representing the song (should be 1D, length = dimension).
-            filename (str): The name or identifier of the song file.
-
-        Returns:
-            None
-        """
+    def add_song(self, vector, filename, cluster_id=None):
         vec = vector.astype(np.float32).reshape(1, -1)
         self.index.add(vec)
-        self.metadata.append(filename)
+        self.metadata.append({"filename": filename, "cluster_id": cluster_id})
 
-        if self.metadata:
-            print(self.metadata)
-       
+    def get_cluster(self, filename):
+        for entry in self.metadata:
+            if entry["filename"] == filename:
+                return entry["cluster_id"]
+        return None
 
     def search(self, vector, k=5):
-        """
-        Search for the k most similar songs to the given feature vector.
-
-        Args:
-            vector (np.ndarray): The feature vector to search for (should be 1D, length = dimension).
-            k (int): The number of closest matches to return.
-
-        Returns:
-            list: [closestSongsList, match_scores] where
-                - closestSongsList is a list of k filenames (metadata) of the closest songs.
-                - match_scores is a list of 0–100 match percentages (higher = more similar).
-
-        Prints and returns nothing if the index is empty.
-        """
         vec = vector.astype(np.float32).reshape(1, -1)
         closestSongsList = []
         match_scores = []
 
-        if self.index.ntotal != 0:
-            k = min(k, self.index.ntotal) # limit by the amount of items in index
-            distances, indices = self.index.search(vec, k)
-        else:
-            return print("There is no Index to search. Try Again!")
+        if self.index.ntotal == 0:
+            return None
+
+        k = min(k, self.index.ntotal)
+        distances, indices = self.index.search(vec, k)
 
         for songID, squared_distance in zip(indices[0], distances[0]):
             if songID != -1:
-                closestSongsList.append(self.metadata[songID])
+                closestSongsList.append(self.metadata[songID]["filename"])
                 distance = np.sqrt(float(squared_distance))
                 match_scores.append(distance_to_match_percent(distance))
 

@@ -1,3 +1,5 @@
 faiss-cpu
 librosa
 numpy
+scikit-learn
+streamlit

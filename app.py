@@ -20,7 +20,7 @@ def load_library():
     all_files = []
 
     # Load all audio files in the data directory
-    location = Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Ready to Sell"
+    location = "data" 
     for file in os.listdir(location):
         if file.endswith((".wav", ".aif", ".m4a", ".mp3")):
             vec = extract_features(os.path.join(location, file))

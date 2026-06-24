@@ -3,3 +3,5 @@ librosa
 numpy
 scikit-learn
 streamlit
+fastapi
+uvicorn

@@ -1,12 +1,14 @@
-# MusicReccomender 
+# MusicReccomender
 
-My small Python project that recommends similar songs by comparing audio fingerprints. Each track is converted into a 13-dimensional MFCC vector with [librosa](https://librosa.org/), then indexed with [FAISS](https://github.com/facebookresearch/faiss) for fast nearest-neighbor search. (readme augmented by cursor:)
+My small Python app that recommends similar songs from your library by comparing audio fingerprints. Each track is converted into a 59-dimensional feature vector with [librosa](https://librosa.org/) (MFCC, chroma, spectral contrast), indexed with [FAISS](https://github.com/facebookresearch/faiss), and re-ranked by K-Means cluster ("vibe") with [scikit-learn](https://scikit-learn.org/).
 
 ## How it works
 
-1. **Extract** — Load up to 30 seconds of audio and compute mean MFCC features (`src/extractor.py`).
-2. **Index** — Store feature vectors in a FAISS L2 index with filename metadata (`src/indexer.py`).
-3. **Search** — Given a query track, find the closest matches in the index.
+1. **Extract** — Load up to 30 seconds of audio and build a fingerprint vector (`src/extractor.py`).
+2. **Scale** — Standardize features across the library so no single feature dominates.
+3. **Cluster** — K-Means groups songs into vibe clusters (no manual tags needed).
+4. **Retrieve** — FAISS returns the top 20 most similar songs (candidate pool).
+5. **Re-rank** — Boost same-vibe matches and penalize different-vibe matches (`src/re_ranker.py`).
 
 ## Project structure
 
@@ -15,10 +17,11 @@ MusicReccomender/
 ├── data/              # Your audio files (gitignored)
 ├── src/
 │   ├── __init__.py
-│   ├── extractor.py   # MFCC feature extraction
-│   └── indexer.py     # FAISS vector index + search
-├── tests/             # Reserved for unit tests
-├── main.py            # Entry point / demo script
+│   ├── extractor.py   # Audio feature extraction
+│   ├── indexer.py     # FAISS L2 index + search
+│   └── re_ranker.py   # K-Means clustering + re-ranking
+├── app.py             # Streamlit UI (main entry point)
+├── main.py            # FastAPI backend (optional)
 ├── requirements.txt
 └── README.md
 ```
@@ -35,16 +38,27 @@ Add your audio files to `data/`. Supported extensions: `.wav`, `.aif`, `.m4a`, `
 
 ## Usage
 
-Run the demo:
+**Streamlit app (recommended):**
 
 ```bash
-python main.py
+streamlit run app.py
 ```
 
-This extracts features from a sample file in `data/`, adds it to the index, and runs a similarity search. Update the file path in `main.py` to use a different track.
+Upload a song to get recommendations. Use the sidebar to adjust how many results to show and toggle **Same vibe only** to filter by cluster.
+
+**FastAPI backend (optional):**
+
+```bash
+uvicorn main:app --reload
+```
+
+POST an audio file to `/recommend`. Note: the API uses basic FAISS search and does not include scaling or re-ranking yet.
 
 ## Dependencies
 
-- `faiss-cpu` — vector similarity search
-- `librosa` — audio loading and MFCC extraction
+- `faiss-cpu` — fast vector similarity search
+- `librosa` — audio loading and feature extraction
 - `numpy` — numerical arrays
+- `scikit-learn` — scaling, K-Means clustering, re-ranking
+- `streamlit` — web UI
+- `fastapi` / `uvicorn` — optional REST API (`main.py`)

@@ -11,14 +11,12 @@ def extract_features(file_path):
         
         # Extract 13 MFCCs (a standard number for audio representation)
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+        # you can add extra features for better recommendation here
         
         # Take the mean across the time axis. 
         # This gives us a fixed-length vector regardless of the song's length.
         mfcc_processed = np.mean(mfcc, axis=1)
 
-        # if mfcc_processed is not None:
-        #     print(f"Success! Vector shape: {mfcc_processed.shape}")
-        #     print(f"Vector preview: {mfcc_processed}")
 
         return mfcc_processed
     except Exception as e:

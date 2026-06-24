@@ -1,12 +1,12 @@
 # MusicReccomender
 
-This is a small Python project that recommends similar songs by comparing audio fingerprints. Each track is converted into a 13-dimensional MFCC vector with [librosa](https://librosa.org/), then indexed with [FAISS](https://github.com/facebookresearch/faiss) for fast nearest-neighbor search.
+A small Python project that recommends similar songs by comparing audio fingerprints. Each track is converted into a 13-dimensional MFCC vector with [librosa](https://librosa.org/), then indexed with [FAISS](https://github.com/facebookresearch/faiss) for fast nearest-neighbor search.
 
 ## How it works
 
-1. **Extract** — Loads up to 30 seconds of audio and computes mean MFCC features (`src/extractor.py`).
-2. **Index** — Stores feature vectors in a FAISS L2 index with filename metadata (`src/indexer.py`).
-3. **Search** — Given a query track, finds the closest matches among indexed songs.
+1. **Extract** — Load up to 30 seconds of audio and compute mean MFCC features (`src/extractor.py`).
+2. **Index** — Store feature vectors in a FAISS L2 index with filename metadata (`src/indexer.py`).
+3. **Search** — Given a query track, find the closest matches in the index.
 
 ## Project structure
 

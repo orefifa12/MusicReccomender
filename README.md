@@ -1,6 +1,6 @@
 # MusicReccomender
 
-My small Python app that recommends similar songs from your library by comparing audio fingerprints. Each track is converted into a 59-dimensional feature vector with [librosa](https://librosa.org/) (MFCC, chroma, spectral contrast), indexed with [FAISS](https://github.com/facebookresearch/faiss), and re-ranked by K-Means cluster ("vibe") with [scikit-learn](https://scikit-learn.org/).
+My small Python app that recommends similar songs from your library by comparing audio fingerprints. Each track is converted into a 59-dimensional feature vector with [librosa](https://librosa.org/) (MFCC, chroma, spectral contrast), indexed with [FAISS](https://github.com/facebookresearch/faiss), and re-ranked by K-Means cluster ("vibe") with [scikit-learn](https://scikit-learn.org/). (readme augmented by cursor:)
 
 ## How it works
 

@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 from sklearn.preprocessing import StandardScaler
-
+from pathlib import Path
 from src.extractor import extract_features
 from src.indexer import MusicIndexer
 from src.re_ranker import (
@@ -19,9 +19,11 @@ def load_library():
     all_vectors = []
     all_files = []
 
-    for file in os.listdir("data"):
+    # Load all audio files in the data directory
+    location = Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Ready to Sell"
+    for file in os.listdir(location):
         if file.endswith((".wav", ".aif", ".m4a", ".mp3")):
-            vec = extract_features(os.path.join("data", file))
+            vec = extract_features(os.path.join(location, file))
             if vec is not None:
                 all_vectors.append(vec)
                 all_files.append(file)
